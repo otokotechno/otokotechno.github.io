@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>otokotechno Stu. — Listen Now</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&family=Oswald:wght@700&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-deep:   #020818;
+    --navy-mid:    #061530;
+    --navy-light:  #0a2550;
+    --accent-ice:  #7dd8f8;
+    --accent-gold: #c8a96e;
+    --accent-glow: #4fa8d8;
+    --white:       #eef4ff;
+    --muted:       #4a6080;
+    --muted-light: #7a9ab8;
+    --surface:     rgba(8, 28, 60, 0.72);
+    --border:      rgba(125, 216, 248, 0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy-deep);
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1rem 5rem;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── Background ── */
+  .bg-gradient {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 120% 70% at 50% -10%, #0d2a5e 0%, transparent 60%),
+      radial-gradient(ellipse 80% 50% at 15% 80%,  #051840 0%, transparent 55%),
+      radial-gradient(ellipse 60% 40% at 85% 90%,  #071e4a 0%, transparent 55%),
+      linear-gradient(180deg, #020c22 0%, #010a1c 50%, #020818 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Subtle star field */
+  .bg-stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .bg-stars::before,
+  .bg-stars::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(200,220,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, rgba(200,220,255,0.3) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 40% 8%,  rgba(200,220,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 22%, rgba(200,220,255,0.25) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 55%, rgba(200,220,255,0.35) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 88% 12%, rgba(200,220,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 70%, rgba(200,220,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5%  80%, rgba(200,220,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 65%, rgba(200,220,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 33% 88%, rgba(200,220,255,0.25) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 70% 90%, rgba(200,220,255,0.35) 0%, transparent 100%);
+    background-size: 100% 100%;
+  }
+  .bg-stars::after {
+    transform: rotate(23deg) scale(1.4);
+    opacity: 0.6;
+  }
+
+  /* Horizon glow line */
+  .bg-horizon {
+    position: fixed;
+    bottom: 30%;
+    left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(77,168,216,0.15) 30%, rgba(77,168,216,0.25) 50%, rgba(77,168,216,0.15) 70%, transparent 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── Container ── */
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 4rem;
+  }
+
+  /* ── Header ── */
+  .header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2.8rem;
+    animation: riseIn 1s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .label-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.5em;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    opacity: 0.85;
+  }
+  .label-top::before,
+  .label-top::after {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent-gold);
+    opacity: 0.5;
+  }
+
+  .artist-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.5rem, 7.5vw, 2.4rem);
+    letter-spacing: 0.12em;
+    color: #ffffff;
+    line-height: 1.15;
+    text-shadow:
+      0 0 30px rgba(125,216,248,0.6),
+      0 0 60px rgba(125,216,248,0.25),
+      0 2px 4px rgba(0,0,0,0.8);
+    margin-bottom: 0.9rem;
+  }
+
+  .genre-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-bottom: 0;
+  }
+
+  .tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted-light);
+    padding: 0.2rem 0.6rem;
+    border: 1px solid rgba(125,216,248,0.15);
+    border-radius: 2px;
+    background: rgba(125,216,248,0.04);
+  }
+
+  /* ── Divider ── */
+  .divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 1s ease 0.4s both;
+  }
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(125,216,248,0.3));
+  }
+  .divider::after {
+    background: linear-gradient(90deg, rgba(125,216,248,0.3), transparent);
+  }
+  .divider-text {
+    font-size: 0.55rem;
+    letter-spacing: 0.5em;
+    color: var(--muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── Links ── */
+  .links {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .link-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.25rem 0.9rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    text-decoration: none;
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 400;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    overflow: hidden;
+    animation: slideIn 0.5s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  /* Left accent bar */
+  .link-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--bar-color, rgba(125,216,248,0.3));
+    transition: background 0.2s ease;
+  }
+
+  /* Hover shimmer */
+  .link-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--shimmer, rgba(125,216,248,0.04)) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .link-btn:hover {
+    transform: translateX(6px);
+    border-color: var(--accent-color, rgba(125,216,248,0.35));
+    box-shadow: 0 4px 24px var(--shadow, rgba(125,216,248,0.12)), -4px 0 16px var(--shadow, rgba(125,216,248,0.08));
+    background: rgba(10, 30, 65, 0.9);
+  }
+  .link-btn:hover::before { background: var(--bar-color-hover, var(--accent-ice)); }
+  .link-btn:hover::after  { opacity: 1; }
+
+  /* Per-store colors */
+  .btn-spotify   { --bar-color:#1DB954; --bar-color-hover:#1DB954; --accent-color:rgba(29,185,84,0.4);  --shadow:rgba(29,185,84,0.15);  --shimmer:rgba(29,185,84,0.06); }
+  .btn-apple     { --bar-color:#fc3c44; --bar-color-hover:#fc3c44; --accent-color:rgba(252,60,68,0.4);  --shadow:rgba(252,60,68,0.15);  --shimmer:rgba(252,60,68,0.06); }
+  .btn-youtube   { --bar-color:#ff0000; --bar-color-hover:#ff0000; --accent-color:rgba(255,0,0,0.4);    --shadow:rgba(255,0,0,0.12);    --shimmer:rgba(255,0,0,0.05); }
+  .btn-amazon    { --bar-color:#00a8e0; --bar-color-hover:#00a8e0; --accent-color:rgba(0,168,224,0.4);  --shadow:rgba(0,168,224,0.15);  --shimmer:rgba(0,168,224,0.06); }
+  .btn-line      { --bar-color:#06C755; --bar-color-hover:#06C755; --accent-color:rgba(6,199,85,0.4);   --shadow:rgba(6,199,85,0.12);   --shimmer:rgba(6,199,85,0.05); }
+  .btn-awa       { --bar-color:#ff6d00; --bar-color-hover:#ff6d00; --accent-color:rgba(255,109,0,0.4);  --shadow:rgba(255,109,0,0.12);  --shimmer:rgba(255,109,0,0.05); }
+  .btn-recochoku { --bar-color:#e8003d; --bar-color-hover:#e8003d; --accent-color:rgba(232,0,61,0.4);   --shadow:rgba(232,0,61,0.12);   --shimmer:rgba(232,0,61,0.05); }
+  .btn-mora      { --bar-color:#009fe8; --bar-color-hover:#009fe8; --accent-color:rgba(0,159,232,0.4);  --shadow:rgba(0,159,232,0.12);  --shimmer:rgba(0,159,232,0.05); }
+  .btn-itunes    { --bar-color:#fc3c44; --bar-color-hover:#fc3c44; --accent-color:rgba(252,60,68,0.35); --shadow:rgba(252,60,68,0.12);  --shimmer:rgba(252,60,68,0.05); }
+  .btn-rakuten   { --bar-color:#bf0000; --bar-color-hover:#bf0000; --accent-color:rgba(191,0,0,0.4);    --shadow:rgba(191,0,0,0.12);    --shimmer:rgba(191,0,0,0.05); }
+  .btn-tidal     { --bar-color:#01fefc; --bar-color-hover:#01fefc; --accent-color:rgba(1,254,252,0.4);  --shadow:rgba(1,254,252,0.12);  --shimmer:rgba(1,254,252,0.05); }
+  .btn-deezer    { --bar-color:#a238ff; --bar-color-hover:#a238ff; --accent-color:rgba(162,56,255,0.4); --shadow:rgba(162,56,255,0.12); --shimmer:rgba(162,56,255,0.05); }
+  .btn-kkbox     { --bar-color:#009de0; --bar-color-hover:#009de0; --accent-color:rgba(0,157,224,0.4);  --shadow:rgba(0,157,224,0.12);  --shimmer:rgba(0,157,224,0.05); }
+  .btn-default   { --bar-color:rgba(125,216,248,0.3); --bar-color-hover:var(--accent-ice); --accent-color:rgba(125,216,248,0.3); --shadow:rgba(125,216,248,0.1); --shimmer:rgba(125,216,248,0.04); }
+
+  /* Stagger */
+  .links .link-btn:nth-child(1)  { animation-delay: 0.45s; }
+  .links .link-btn:nth-child(2)  { animation-delay: 0.54s; }
+  .links .link-btn:nth-child(3)  { animation-delay: 0.63s; }
+  .links .link-btn:nth-child(4)  { animation-delay: 0.72s; }
+  .links .link-btn:nth-child(5)  { animation-delay: 0.81s; }
+  .links .link-btn:nth-child(6)  { animation-delay: 0.90s; }
+  .links .link-btn:nth-child(7)  { animation-delay: 0.99s; }
+  .links .link-btn:nth-child(8)  { animation-delay: 1.08s; }
+  .links .link-btn:nth-child(9)  { animation-delay: 1.17s; }
+  .links .link-btn:nth-child(10) { animation-delay: 1.26s; }
+
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-icon svg { width: 22px; height: 22px; }
+
+  .btn-text { flex: 1; min-width: 0; }
+
+  .btn-name {
+    display: block;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  .btn-sub {
+    display: block;
+    font-size: 0.62rem;
+    font-weight: 300;
+    color: var(--muted-light);
+    letter-spacing: 0.1em;
+    margin-top: 0.1rem;
+  }
+
+  .btn-arrow {
+    font-size: 0.75rem;
+    color: var(--muted);
+    transition: color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+    letter-spacing: -0.05em;
+  }
+  .link-btn:hover .btn-arrow {
+    color: var(--accent-ice);
+    transform: translateX(3px);
+  }
+
+  /* ── More toggle ── */
+  .more-section { width: 100%; }
+
+  .more-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 1px solid rgba(125,216,248,0.1);
+    border-radius: 2px;
+    color: var(--muted);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 400;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.65rem 1.2rem;
+    width: 100%;
+    transition: all 0.2s;
+    margin-bottom: 0.55rem;
+    animation: fadeIn 0.6s ease 1.35s both;
+  }
+  .more-toggle:hover {
+    border-color: rgba(125,216,248,0.3);
+    color: var(--accent-ice);
+    background: rgba(125,216,248,0.04);
+  }
+
+  .more-links { display: none; flex-direction: column; gap: 0.55rem; }
+  .more-links.open { display: flex; }
+  .more-links .link-btn { animation: none; opacity: 1; transform: none; }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 2.8rem;
+    text-align: center;
+    animation: fadeIn 1s ease 1.5s both;
+  }
+
+  .footer-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-dot {
+    width: 5px; height: 5px;
+    background: var(--accent-ice);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--accent-ice);
+    animation: breathe 3s ease infinite;
+  }
+
+  .footer p {
+    font-size: 0.58rem;
+    letter-spacing: 0.35em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  @keyframes breathe {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.35; transform: scale(0.7); }
+  }
+
+  /* ── Animations ── */
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* icon text fallbacks */
+  .icon-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    line-height: 1.1;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Recommend Section ── */
+  .recommend-section {
+    width: 100%;
+    margin-bottom: 2rem;
+    animation: riseIn 1s cubic-bezier(.16,1,.3,1) 0.3s both;
+  }
+
+  .recommend-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.9rem;
+  }
+
+  .recommend-title {
+    font-size: 0.58rem;
+    letter-spacing: 0.5em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* Horizontal scroll track */
+  .cards-track {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+  }
+  .cards-track::-webkit-scrollbar { display: none; }
+
+  /* Card */
+  .rec-card {
+    flex: 0 0 160px;
+    scroll-snap-align: start;
+    background: rgba(8, 28, 60, 0.8);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--white);
+    backdrop-filter: blur(12px);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .rec-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(125,216,248,0.35);
+    box-shadow: 0 8px 24px rgba(125,216,248,0.12);
+  }
+
+  .rec-card-badge {
+    position: absolute;
+    top: 0.4rem;
+    left: 0.4rem;
+    font-size: 0.48rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.45rem;
+    border-radius: 2px;
+    font-weight: 700;
+    z-index: 2;
+  }
+  .badge-new  { background: rgba(200,169,110,0.9); color: #020818; }
+  .badge-pick { background: rgba(125,216,248,0.9); color: #020818; }
+
+  .rec-card-art {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(135deg, #0d2a5e 0%, #061530 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .rec-card-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .rec-card-art .art-placeholder {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2rem;
+    color: rgba(125,216,248,0.15);
+    user-select: none;
+  }
+
+  /* Edit overlay on art */
+  .rec-card-art .edit-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(2,8,24,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--accent-ice);
+    text-transform: uppercase;
+    gap: 0.3rem;
+  }
+  .rec-card:hover .edit-overlay { opacity: 1; }
+
+  .rec-card-info {
+    padding: 0.65rem 0.75rem 0.75rem;
+  }
+
+  .rec-card-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    color: var(--muted-light);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+
+  .rec-card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rec-card-sub {
+    font-size: 0.6rem;
+    color: var(--muted-light);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Edit button always visible top-right */
+  .card-edit-btn {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+    z-index: 3;
+    background: rgba(2,8,24,0.75);
+    border: 1px solid rgba(125,216,248,0.25);
+    border-radius: 2px;
+    color: var(--accent-ice);
+    font-size: 0.75rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    padding: 0;
+    line-height: 1;
+  }
+  .card-edit-btn:hover {
+    background: rgba(125,216,248,0.15);
+    border-color: var(--accent-ice);
+  }
+
+  .rec-card-listen {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.55rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent-ice);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .rec-card-listen:hover { opacity: 1 !important; }
+
+  /* Empty card state */
+  .rec-card.empty {
+    border-style: dashed;
+    border-color: rgba(125,216,248,0.1);
+    background: rgba(8,28,60,0.3);
+  }
+  .rec-card.empty .rec-card-art {
+    background: rgba(8,28,60,0.3);
+  }
+  .rec-card.empty .art-placeholder {
+    opacity: 0.4;
+  }
+
+  /* ── Edit Modal ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2,8,24,0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.open {
+    display: flex;
+  }
+
+  .modal {
+    background: #061530;
+    border: 1px solid rgba(125,216,248,0.2);
+    border-radius: 4px;
+    padding: 1.8rem;
+    width: 100%;
+    max-width: 360px;
+    position: relative;
+    z-index: 10000;
+  }
+
+  .modal-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--accent-ice);
+    text-transform: uppercase;
+    margin-bottom: 1.4rem;
+  }
+
+  .modal-field {
+    margin-bottom: 1rem;
+  }
+
+  .modal-label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.35em;
+    color: var(--muted-light);
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+
+  .modal-input {
+    width: 100%;
+    background: rgba(2,8,24,0.8);
+    border: 1px solid rgba(125,216,248,0.15);
+    border-radius: 2px;
+    padding: 0.6rem 0.75rem;
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal-input:focus {
+    border-color: rgba(125,216,248,0.4);
+  }
+  .modal-input::placeholder { color: var(--muted); }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1.4rem;
+  }
+
+  .btn-save {
+    flex: 1;
+    background: rgba(125,216,248,0.12);
+    border: 1px solid rgba(125,216,248,0.35);
+    border-radius: 2px;
+    color: var(--accent-ice);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 0.65rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-save:hover {
+    background: rgba(125,216,248,0.2);
+    box-shadow: 0 0 16px rgba(125,216,248,0.15);
+  }
+
+  .btn-cancel {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 2px;
+    color: var(--muted-light);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 0.65rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-cancel:hover { border-color: rgba(255,255,255,0.2); color: var(--white); }
+
+  /* ── Play button on artwork ── */
+  .play-btn {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(2,8,24,0.45);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: rgba(255,255,255,0.9);
+    transition: background 0.2s, font-size 0.15s;
+    z-index: 2;
+  }
+  .play-btn:hover { background: rgba(2,8,24,0.6); font-size: 2.2rem; }
+  .play-btn.playing::before { content: '❚❚'; font-size: 1.4rem; }
+  .play-btn.playing { font-size: 0; }
+  .play-btn.playing::before { font-size: 1.4rem; display:block; }
+  .rec-card-art { position: relative; }
+
+  #playerOverlay.open { display:flex !important; }
+
+  /* ── Banner 16:9 ── */
+  .banner-section {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 1.5rem;
+    padding: 0 1rem;
+  }
+  .banner-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: rgba(8,28,60,0.7);
+    border: 1px solid rgba(125,216,248,0.12);
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .banner-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: rgba(125,216,248,0.3);
+  }
+  .banner-placeholder-icon { font-size: 2rem; }
+  .banner-placeholder-text { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; }
+  .banner-play-btn {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(2,8,24,0.35);
+    border: none;
+    cursor: pointer;
+    font-size: 2.5rem;
+    color: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 2;
+  }
+  .banner-play-btn:hover { background: rgba(2,8,24,0.55); }
+  .banner-meta {
+    padding: 0.65rem 0.1rem 0;
+  }
+  .banner-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.08em;
+    min-height: 1.2em;
+  }
+  .banner-sub {
+    font-size: 0.62rem;
+    color: rgba(125,216,248,0.55);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 0.15rem;
+    min-height: 1em;
+  }
+  .banner-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+  .banner-listen {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent-ice);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .banner-listen:hover { opacity: 1 !important; }
+  .banner-edit-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 3;
+    background: rgba(2,8,24,0.7);
+    border: 1px solid rgba(125,216,248,0.25);
+    border-radius: 2px;
+    color: rgba(125,216,248,0.8);
+    font-size: 0.75rem;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    padding: 0;
+  }
+  .banner-edit-btn:hover { background: rgba(125,216,248,0.15); border-color: var(--accent-ice); }
+</style>
+</head>
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-stars"></div>
+<div class="bg-horizon"></div>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="label-top">Artist</div>
+    <h1 class="artist-name">otokotechno Stu.</h1>
+    <div class="genre-tags">
+      <span class="tag">Trance</span>
+      <span class="tag">EDM</span>
+      <span class="tag">Progressive</span>
+      <span class="tag">House</span>
+      <span class="tag">Pop</span>
+    </div>
+  </div>
+
+  <!-- Recommend Section -->
+  <div class="banner-section">
+    <div class="banner-wrap" id="bannerWrap">
+      <div class="banner-placeholder" id="bannerPlaceholder" style="display:none;">
+        <span class="banner-placeholder-icon">♪</span>
+        <span class="banner-placeholder-text">バナー画像を追加</span>
+      </div>
+      <img id="bannerImg" src="https://res.cloudinary.com/dkmbympqh/image/upload/v1776837566/w24xqamujqqfqsurhf9y.jpg" alt="" style="display:block;width:100%;height:100%;object-fit:cover;">
+    </div>
+  </div>
+
+
+  <!-- Player Modal -->
+  <div id="playerOverlay" style="
+    display:none; position:fixed; inset:0; z-index:9000;
+    background:rgba(2,8,24,0.92); backdrop-filter:blur(12px);
+    align-items:center; justify-content:center; padding:1rem;
+  ">
+    <div style="
+      background:linear-gradient(160deg,#0a1628 0%,#040d1e 100%);
+      border:1px solid rgba(125,216,248,0.15); border-radius:4px;
+      padding:1.5rem; width:100%; max-width:480px; position:relative;
+    ">
+      <button onclick="closePlayer()" style="
+        position:absolute; top:0.75rem; right:0.75rem;
+        background:none; border:none; color:rgba(125,216,248,0.6);
+        font-size:1.2rem; cursor:pointer; padding:0.25rem 0.5rem;
+      ">✕</button>
+      <div id="playerTitle" style="font-family:'Orbitron',sans-serif;font-size:0.85rem;color:#fff;letter-spacing:0.15em;margin-bottom:0.25rem;padding-right:2rem;"></div>
+      <div id="playerSub"   style="font-size:0.65rem;color:rgba(125,216,248,0.6);letter-spacing:0.15em;margin-bottom:1rem;"></div>
+      <div id="playerVideoWrap" style="display:none;">
+        <video id="playerVideo" controls playsinline
+          style="width:100%;border-radius:2px;background:#000;max-height:280px;">
+        </video>
+      </div>
+      <div id="playerAudioWrap" style="display:none; flex-direction:column; align-items:center; padding:1rem 0;">
+        <div style="font-size:3rem;margin-bottom:1rem;">🎵</div>
+        <audio id="playerAudio" controls style="width:100%;"></audio>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-title" id="modalTitle">Edit Card</div>
+
+      <div class="modal-field">
+        <label class="modal-label">バナー画像をアップロード</label>
+        <label id="uploadArea" for="inputImg" style="
+          display:block;
+          border: 1px dashed rgba(125,216,248,0.25);
+          border-radius: 2px;
+          padding: 1rem;
+          text-align: center;
+          cursor: pointer;
+          transition: border-color 0.2s, background 0.2s;
+          background: rgba(2,8,24,0.5);
+        "
+           ondragover="event.preventDefault(); this.style.borderColor='rgba(125,216,248,0.6)'; this.style.background='rgba(125,216,248,0.05)'"
+           ondragleave="this.style.borderColor='rgba(125,216,248,0.25)'; this.style.background='rgba(2,8,24,0.5)'"
+           ondrop="handleDrop(event)">
+          <div id="uploadPreview" style="display:none; margin-bottom:0.5rem;">
+            <img id="previewImg" src="" alt="" style="width:100%;max-height:120px;object-fit:contain;border-radius:2px;display:block;margin:0 auto;">
+          </div>
+          <div id="uploadHint" style="font-size:0.65rem;letter-spacing:0.2em;color:var(--muted-light);text-transform:uppercase;">
+            ＋ 画像を選択またはドラッグ&ドロップ
+          </div>
+          <input id="inputImg" type="file" accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
+        </label>
+        <div id="uploadStatus" style="font-size:0.62rem;color:rgba(125,216,248,0.6);margin-top:0.5rem;text-align:center;min-height:1.2em;"></div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-save"   onclick="saveCard()">保存 / Save</button>
+        <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="divider"><span class="divider-text">Listen Now · 今すぐ聴く</span></div>
+
+  <!-- Main links -->
+  <div class="links">
+
+    <a class="link-btn btn-spotify" href="https://open.spotify.com/artist/59vivyTjZPY6sPPsouE5G4" onclick="goToStore(event, 'https://open.spotify.com/artist/59vivyTjZPY6sPPsouE5G4')" target="_blank" rel="noopener">
+      <span class="btn-icon">
+        <svg viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.516 17.322a.748.748 0 01-1.03.25c-2.818-1.723-6.365-2.112-10.542-1.157a.748.748 0 11-.334-1.459c4.571-1.045 8.492-.595 11.656 1.337a.748.748 0 01.25 1.029zm1.473-3.27a.937.937 0 01-1.288.308c-3.225-1.982-8.14-2.557-11.956-1.399a.937.937 0 11-.545-1.793c4.358-1.322 9.776-.682 13.481 1.595a.936.936 0 01.308 1.289zm.127-3.401C15.7 8.39 9.563 8.188 6.024 9.274a1.124 1.124 0 11-.653-2.151c4.109-1.248 10.943-1.007 15.258 1.631a1.124 1.124 0 01-1.513 1.897z"/></svg>
+      </span>
+      <span class="btn-text">
+        <span class="btn-name">Spotify</span>
+        <span class="btn-sub">スポティファイで聴く</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a class="link-btn btn-apple" href="https://music.apple.com/jp/artist/otokotechno-stu/1867070499" onclick="goToStore(event, 'https://music.apple.com/jp/artist/otokotechno-stu/1867070499')" target="_blank" rel="noopener">
+      <span class="btn-icon">
+        <svg viewBox="0 0 24 24" fill="#fc3c44"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      </span>
+      <span class="btn-text">
+        <span class="btn-name">Apple Music</span>
+        <span class="btn-sub">アップルミュージックで聴く</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a class="link-btn btn-youtube" href="https://music.youtube.com/channel/UCpFlC7HxAuyETZ4EC7c4HzA?si=S6BQQ8mGEla5noit" onclick="goToStore(event, 'https://music.youtube.com/channel/UCpFlC7HxAuyETZ4EC7c4HzA?si=S6BQQ8mGEla5noit')" target="_blank" rel="noopener">
+      <span class="btn-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0z" fill="#FF0000"/><path d="M12 5.333A6.667 6.667 0 1 0 12 18.667 6.667 6.667 0 0 0 12 5.333zm0 1.334a5.333 5.333 0 1 1 0 10.666A5.333 5.333 0 0 1 12 6.667z" fill="#fff"/><path d="M10.667 9.333L15.333 12l-4.666 2.667V9.333z" fill="#fff"/><circle cx="12" cy="12" r="1.333" fill="#FF0000"/></svg>
+      </span>
+      <span class="btn-text">
+        <span class="btn-name">YouTube Music</span>
+        <span class="btn-sub">ユーチューブミュージックで聴く</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a class="link-btn btn-amazon" href="https://amazon.co.jp/music/player/artists/B0GFCLMGWX/otokotechno-stu?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_KRhiE0HNJh1tGxMpfa24T8pRW" onclick="goToStore(event, 'https://amazon.co.jp/music/player/artists/B0GFCLMGWX/otokotechno-stu?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_KRhiE0HNJh1tGxMpfa24T8pRW')" target="_blank" rel="noopener">
+      <span class="btn-icon">
+        <svg viewBox="0 0 24 24" fill="#00a8e0"><path d="M.045 18.02c.072-.116.187-.124.348-.022 3.636 2.11 7.594 3.166 11.87 3.166 2.852 0 5.668-.533 8.447-1.595l.315-.14c.138-.06.234-.1.293-.13.226-.088.39-.046.525.13.12.174.09.336-.12.48-.256.19-.6.41-1.006.654-1.244.743-2.64 1.316-4.185 1.726a17.617 17.617 0 01-10.951-.396 17.48 17.48 0 01-5.07-2.907c-.168-.172-.23-.335-.122-.5l-.344.534zm8.126-3.29c.083-.1.198-.12.344-.06 3.43 1.738 6.39 2.34 11.13 1.58.073-.02.15-.03.227-.04.155-.02.28.04.35.17.07.14.04.27-.09.36-.14.1-.31.16-.52.18-4.86.82-8.06.09-11.73-1.79-.17-.1-.23-.24-.13-.38l.42-.01zm5.9-10.5c-1.43.72-3.35 1.08-5.77 1.08H7.93v1.13h.88c2.33 0 4.15-.32 5.45-1.14.25-.17.5-.42.55-.76.03-.27-.06-.44-.3-.55-.38-.17-.85-.06-1.44.24zM6.525 9.97c1.06-.18 1.57-.8 1.57-1.84v-.16c0-1.04-.55-1.64-1.65-1.8l-4.44-.16c-.44 0-.7.24-.7.71v6.08c0 .52.26.71.7.71h.3c.44 0 .7-.19.7-.71v-2.1h1.33l2.08 2.4c.24.28.49.41.77.41h.44c.55 0 .77-.42.42-.87L6.52 9.97zm-3.5-.86V7.54h3.13c.5 0 .76.28.76.78v.01c0 .5-.25.78-.76.78H3.025z"/></svg>
+      </span>
+      <span class="btn-text">
+        <span class="btn-name">Amazon Music</span>
+        <span class="btn-sub">アマゾンミュージックで聴く</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a class="link-btn btn-line" href="https://music.line.me/webapp/artist/mi000000001b191b76/albums" onclick="goToStore(event, 'https://music.line.me/webapp/artist/mi000000001b191b76/albums')" target="_blank" rel="noopener">
+      <span class="btn-icon">
+        <svg viewBox="0 0 24 24" fill="#06C755"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      </span>
+      <span class="btn-text">
+        <span class="btn-name">LINE MUSIC</span>
+        <span class="btn-sub">ラインミュージックで聴く</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a class="link-btn btn-awa" href="https://awa.fm/search?q=otokotechno%20Stu." onclick="goToStore(event, 'https://awa.fm/search?q=otokotechno%20Stu.')" target="_blank" rel="noopener">
+      <span class="btn-icon"><span class="icon-text" style="color:#ff6d00;">AWA</span></span>
+      <span class="btn-text">
+        <span class="btn-name">AWA</span>
+        <span class="btn-sub">AWAで聴く</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a class="link-btn btn-recochoku" href="https://recochoku.jp/search/all?q=otokotechno+Stu." onclick="goToStore(event, 'https://recochoku.jp/search/all?q=otokotechno+Stu.')" target="_blank" rel="noopener">
+      <span class="btn-icon"><span class="icon-text" style="color:#e8003d;font-size:0.6rem;">reco<br>choku</span></span>
+      <span class="btn-text">
+        <span class="btn-name">recochoku</span>
+        <span class="btn-sub">レコチョクで聴く</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a class="link-btn btn-mora" href="https://mora.jp/search/top?keyWord=otokotechno%20Stu." onclick="goToStore(event, 'https://mora.jp/search/top?keyWord=otokotechno%20Stu.')" target="_blank" rel="noopener">
+      <span class="btn-icon"><span class="icon-text" style="color:#009fe8;font-style:italic;">mora</span></span>
+      <span class="btn-text">
+        <span class="btn-name">mora</span>
+        <span class="btn-sub">moraで購入・ダウンロード</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a class="link-btn btn-itunes" href="https://music.apple.com/jp/artist/otokotechno-stu/1867070499" onclick="goToStore(event, 'https://music.apple.com/jp/artist/otokotechno-stu/1867070499')" target="_blank" rel="noopener">
+      <span class="btn-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="itg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#d63cff"/><stop offset="100%" style="stop-color:#fc3c44"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#itg)"/><path d="M17 7v7.5a2.5 2.5 0 1 1-1.5-2.29V9l-6 1.5V16a2.5 2.5 0 1 1-1.5-2.29V8.5L17 7z" fill="#fff"/></svg>
+      </span>
+      <span class="btn-text">
+        <span class="btn-name">iTunes Store</span>
+        <span class="btn-sub">購入・ダウンロード</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+  </div>
+
+  <!-- More stores -->
+  <div class="more-section">
+    <button class="more-toggle" id="moreToggle" onclick="toggleMore()">
+      ＋ &nbsp;More Stores &nbsp;/&nbsp; その他のストア
+    </button>
+    <div class="more-links" id="moreLinks">
+
+      <a class="link-btn btn-rakuten" href="https://music.rakuten.co.jp/link/search/result/ALBUM?q=otokotechno%20Stu." onclick="goToStore(event, 'https://music.rakuten.co.jp/link/search/result/ALBUM?q=otokotechno%20Stu.')" target="_blank" rel="noopener">
+        <span class="btn-icon"><span class="icon-text" style="color:#bf0000;font-size:0.58rem;">楽天<br>Music</span></span>
+        <span class="btn-text"><span class="btn-name">Rakuten Music</span><span class="btn-sub">楽天ミュージックで聴く</span></span>
+        <span class="btn-arrow">›</span>
+      </a>
+
+      <a class="link-btn btn-tidal" href="https://listen.tidal.com/search?q=otokotechno%20Stu." onclick="goToStore(event, 'https://listen.tidal.com/search?q=otokotechno%20Stu.')" target="_blank" rel="noopener">
+        <span class="btn-icon"><span class="icon-text" style="color:#01fefc;">TIDAL</span></span>
+        <span class="btn-text"><span class="btn-name">TIDAL</span><span class="btn-sub">TIDALで聴く</span></span>
+        <span class="btn-arrow">›</span>
+      </a>
+
+      <a class="link-btn btn-deezer" href="https://www.deezer.com/search/otokotechno%20Stu." onclick="goToStore(event, 'https://www.deezer.com/search/otokotechno%20Stu.')" target="_blank" rel="noopener">
+        <span class="btn-icon"><span class="icon-text" style="color:#a238ff;font-size:0.7rem;">DEEZER</span></span>
+        <span class="btn-text"><span class="btn-name">Deezer</span><span class="btn-sub">Deezerで聴く</span></span>
+        <span class="btn-arrow">›</span>
+      </a>
+
+      <a class="link-btn btn-kkbox" href="https://www.kkbox.com/jp/ja/search.php?word=otokotechno%20Stu." onclick="goToStore(event, 'https://www.kkbox.com/jp/ja/search.php?word=otokotechno%20Stu.')" target="_blank" rel="noopener">
+        <span class="btn-icon"><span class="icon-text" style="color:#009de0;font-size:0.72rem;">KKBOX</span></span>
+        <span class="btn-text"><span class="btn-name">KKBOX</span><span class="btn-sub">KKBOXで聴く</span></span>
+        <span class="btn-arrow">›</span>
+      </a>
+
+      <a class="link-btn btn-default" href="https://ototoy.jp/find/?q=otokotechno%20Stu." onclick="goToStore(event, 'https://ototoy.jp/find/?q=otokotechno%20Stu.')" target="_blank" rel="noopener">
+        <span class="btn-icon"><span class="icon-text" style="color:#aac4d8;font-size:0.7rem;">OTOTOY</span></span>
+        <span class="btn-text"><span class="btn-name">OTOTOY</span><span class="btn-sub">OTOTOYで購入</span></span>
+        <span class="btn-arrow">›</span>
+      </a>
+
+      <a class="link-btn btn-default" href="https://y.qq.com/portal/search.html?t=album&w=otokotechno%20Stu." onclick="goToStore(event, 'https://y.qq.com/portal/search.html?t=album&w=otokotechno%20Stu.')" target="_blank" rel="noopener">
+        <span class="btn-icon"><span class="icon-text" style="color:#aac4d8;font-size:0.62rem;">QQ<br>Music</span></span>
+        <span class="btn-text"><span class="btn-name">QQ Music</span><span class="btn-sub">QQミュージックで聴く</span></span>
+        <span class="btn-arrow">›</span>
+      </a>
+
+      <a class="link-btn btn-default" href="https://music.163.com/#/search/m/?s=otokotechno%20Stu.&type=10" onclick="goToStore(event, 'https://music.163.com/#/search/m/?s=otokotechno%20Stu.&type=10')" target="_blank" rel="noopener">
+        <span class="btn-icon"><span class="icon-text" style="color:#aac4d8;font-size:0.55rem;">NetEase<br>Music</span></span>
+        <span class="btn-text"><span class="btn-name">NetEase Music</span><span class="btn-sub">網易云音楽で聴く</span></span>
+        <span class="btn-arrow">›</span>
+      </a>
+
+      <a class="link-btn btn-default" href="https://vibe.naver.com/search?query=otokotechno%20Stu." onclick="goToStore(event, 'https://vibe.naver.com/search?query=otokotechno%20Stu.')" target="_blank" rel="noopener">
+        <span class="btn-icon"><span class="icon-text" style="color:#aac4d8;">VIBE</span></span>
+        <span class="btn-text"><span class="btn-name">VIBE</span><span class="btn-sub">VIBEで聴く</span></span>
+        <span class="btn-arrow">›</span>
+      </a>
+
+      <a class="link-btn btn-default" href="https://www.melon.com/search/album/index.htm?q=otokotechno%20Stu." onclick="goToStore(event, 'https://www.melon.com/search/album/index.htm?q=otokotechno%20Stu.')" target="_blank" rel="noopener">
+        <span class="btn-icon"><span class="icon-text" style="color:#aac4d8;">Melon</span></span>
+        <span class="btn-text"><span class="btn-name">Melon</span><span class="btn-sub">Melonで聴く</span></span>
+        <span class="btn-arrow">›</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-line">
+      <div class="footer-dot"></div>
+    </div>
+    <p>Now Streaming Worldwide &nbsp;·&nbsp; 各国で配信中</p>
+  </div>
+
+</div>
+
+<script>
+// ── Cloudinary config (unsigned upload) ──
+var CLOUDINARY_CLOUD  = 'dkmbympqh';
+var CLOUDINARY_PRESET = 'otokotechno_banner'; // unsigned upload preset
+
+// ── In-app browser detection ──
+(function() {
+  // URLに ?b=1 がついていれば通常表示（ブラウザで開き直した後）
+  if (window.location.search.indexOf('b=1') !== -1) return;
+
+  var overlay = document.createElement('div');
+  overlay.id = 'tikTokOverlay';
+  overlay.style.cssText = [
+    'position:fixed',
+    'inset:0',
+    'z-index:99999',
+    'background:rgba(2,8,24,0.96)',
+    'display:flex',
+    'flex-direction:column',
+    'align-items:center',
+    'justify-content:flex-start',
+    'padding:0',
+    'text-align:center',
+    'font-family:sans-serif',
+    'overflow-y:auto'
+  ].join(';');
+
+  var pageUrl = window.location.href.split('?')[0] + '?b=1';
+
+  overlay.innerHTML = [
+    '<div style="width:100%;padding:4rem 1.5rem 1.5rem;text-align:center;font-family:Oswald,sans-serif;">',
+    '  <div style="font-size:0.55rem;letter-spacing:0.5em;color:#c8a96e;text-transform:uppercase;margin-bottom:0.6rem;">— Artist —</div>',
+    '  <div style="font-size:clamp(1.4rem,7vw,2.2rem);font-weight:900;color:#fff;text-shadow:0 0 30px rgba(125,216,248,0.6);margin-bottom:0.8rem;">otokotechno Stu.</div>',
+    '  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.4rem;">',
+    '    <span style="font-size:0.55rem;letter-spacing:0.25em;color:#7a9ab8;padding:0.2rem 0.6rem;border:1px solid rgba(125,216,248,0.15);border-radius:2px;">Trance</span>',
+    '    <span style="font-size:0.55rem;letter-spacing:0.25em;color:#7a9ab8;padding:0.2rem 0.6rem;border:1px solid rgba(125,216,248,0.15);border-radius:2px;">EDM</span>',
+    '    <span style="font-size:0.55rem;letter-spacing:0.25em;color:#7a9ab8;padding:0.2rem 0.6rem;border:1px solid rgba(125,216,248,0.15);border-radius:2px;">Progressive</span>',
+    '    <span style="font-size:0.55rem;letter-spacing:0.25em;color:#7a9ab8;padding:0.2rem 0.6rem;border:1px solid rgba(125,216,248,0.15);border-radius:2px;">House</span>',
+    '    <span style="font-size:0.55rem;letter-spacing:0.25em;color:#7a9ab8;padding:0.2rem 0.6rem;border:1px solid rgba(125,216,248,0.15);border-radius:2px;">Pop</span>',
+    '  </div>',
+    '</div>',
+    '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:100%;padding:2rem;">',
+    '  <div style="font-size:2rem;margin-bottom:0.8rem;">🌐</div>',
+    '  <div style="color:#7dd8f8;font-size:0.95rem;font-weight:bold;margin-bottom:1rem;">ブラウザで開いてください</div>',
+    '  <div style="color:rgba(255,255,255,0.7);font-size:0.8rem;line-height:2;">',
+    '  右上の <strong style="color:#fff;">・・・</strong> をタップして<br>',
+    '  <strong style="color:#7dd8f8;">「ブラウザで開く」</strong> を選択してください',
+    '  </div>',
+    '</div>'
+  ].join('');
+
+  document.body.appendChild(overlay);
+})();
+
+// ── Store link handler ──// ── Store link handler ──// ── Store link handler ──
+function goToStore(event, url) {
+  event.preventDefault();
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+// ── More stores toggle ──
+function toggleMore() {
+  var links  = document.getElementById('moreLinks');
+  var toggle = document.getElementById('moreToggle');
+  var isOpen = links.classList.toggle('open');
+  toggle.textContent = isOpen ? '－  Less  /  閉じる' : '＋  More Stores  /  その他のストア';
+}
+
+// ── Banner state ──
+var currentCard   = null;
+var pendingImg    = null;
+var pendingAspect = null;
+var bannerSrc     = 'https://res.cloudinary.com/dkmbympqh/image/upload/v1776837566/w24xqamujqqfqsurhf9y.jpg';
+var bannerAspect  = 1.0;
+
+// ── Upload to Cloudinary (unsigned) ──
+function uploadToCloudinary(file) {
+  var status = document.getElementById('uploadStatus');
+  status.textContent = '⏳ アップロード中...';
+
+  var fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_PRESET);
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload', true);
+
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      var data = JSON.parse(xhr.responseText);
+      if (data.secure_url) {
+        pendingImg = data.secure_url;
+        status.textContent = '✓ アップロード完了！';
+      } else {
+        status.textContent = '❌ エラー: ' + (data.error ? data.error.message : '不明');
+      }
+    } else {
+      status.textContent = '❌ サーバーエラー (' + xhr.status + ')';
+    }
+  };
+  xhr.onerror = function() {
+    status.textContent = '❌ 通信エラー。ネット接続を確認してください。';
+  };
+  xhr.send(fd);
+}
+
+// ── File select → preview + upload ──
+function handleFileSelect(event) {
+  var file = event.target.files[0];
+  if (file) processFile(file);
+}
+function handleDrop(event) {
+  event.preventDefault(); event.stopPropagation();
+  document.getElementById('uploadArea').style.borderColor = 'rgba(125,216,248,0.25)';
+  document.getElementById('uploadArea').style.background  = 'rgba(2,8,24,0.5)';
+  var file = event.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) processFile(file);
+}
+
+function processFile(file) {
+  // ローカルプレビュー
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var tmpImg = new Image();
+    tmpImg.onload = function() {
+      pendingAspect = tmpImg.naturalWidth / tmpImg.naturalHeight;
+      document.getElementById('previewImg').src              = e.target.result;
+      document.getElementById('uploadPreview').style.display = 'block';
+      document.getElementById('uploadHint').textContent      = file.name;
+    };
+    tmpImg.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+
+  // Cloudinaryにアップロード
+  uploadToCloudinary(file);
+}
+
+// ── Edit Modal ──
+function openModal(type) {
+  currentCard   = type;
+  pendingImg    = null;
+  pendingAspect = null;
+
+  document.getElementById('inputImg').value           = '';
+  document.getElementById('uploadStatus').textContent = '';
+
+  if (bannerSrc) {
+    document.getElementById('previewImg').src              = bannerSrc;
+    document.getElementById('uploadPreview').style.display = 'block';
+    document.getElementById('uploadHint').textContent      = '✓ 現在の画像';
+  } else {
+    document.getElementById('uploadPreview').style.display = 'none';
+    document.getElementById('uploadHint').textContent      = '＋ 画像を選択またはドラッグ&ドロップ';
+  }
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  currentCard = null; pendingImg = null; pendingAspect = null;
+}
+
+// ── Save ──
+function saveCard() {
+  var status = document.getElementById('uploadStatus');
+  if (status.textContent === '⏳ アップロード中...') {
+    alert('アップロード中です。完了までお待ちください。');
+    return;
+  }
+
+  var newSrc    = pendingImg || bannerSrc;
+  var newAspect = (pendingAspect !== null) ? pendingAspect : bannerAspect;
+
+  bannerSrc    = newSrc;
+  bannerAspect = newAspect;
+
+  var imgEl = document.getElementById('bannerImg');
+  var ph    = document.getElementById('bannerPlaceholder');
+  var wrap  = document.getElementById('bannerWrap');
+
+  if (bannerSrc) {
+    imgEl.src           = bannerSrc;
+    imgEl.style.display = 'block';
+    ph.style.display    = 'none';
+    if (bannerAspect) wrap.style.aspectRatio = bannerAspect.toFixed(4);
+  } else {
+    imgEl.style.display    = 'none';
+    ph.style.display       = 'flex';
+    wrap.style.aspectRatio = '16 / 9';
+  }
+
+  closeModal();
+}
+
+// Backdrop
+document.addEventListener('click', function(e) {
+  var mo = document.getElementById('modalOverlay');
+  if (mo && e.target === mo) closeModal();
+});
+</script>
+
+</body>
+</html>
